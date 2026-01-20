@@ -1,63 +1,92 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { ApiService } from './api.service';
-import { User, LoginRequest, LoginResponse } from '../../shared/models';
-import { tap } from 'rxjs/operators';
+import { User } from '../../shared/models';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
+  private router = inject(Router);
+
   currentUser = signal<User | null>(null);
-  private readonly TOKEN_KEY = 'auth_token';
-  private readonly USER_KEY = 'current_user';
+  isAuthenticated = signal<boolean>(false);
 
-  constructor(
-    private apiService: ApiService,
-    private router: Router
-  ) {
-    this.loadUserFromStorage();
+  // Mock users pour le développement
+  private mockUsers = [
+    {
+      id: 1,
+      email: 'admin@inventaire.tn',
+      password: 'admin123',
+      nom: 'Ben Ali',
+      prenom: 'Jawher',
+      role: 'Admin' as const,
+      siteId: 1
+    },
+    {
+      id: 2,
+      email: 'gestionnaire@inventaire.tn',
+      password: 'gest123',
+      nom: 'Trabelsi',
+      prenom: 'Mohamed',
+      role: 'Gestionnaire' as const,
+      siteId: 1
+    },
+    {
+      id: 3,
+      email: 'operateur@inventaire.tn',
+      password: 'oper123',
+      nom: 'Bouazizi',
+      prenom: 'Ahmed',
+      role: 'Operateur' as const,
+      siteId: 2
+    }
+  ];
+
+  constructor() {
+    this.loadUser();
   }
 
-  login(credentials: LoginRequest) {
-    return this.apiService.post<LoginResponse>('api/auth/login', credentials).pipe(
-      tap(response => {
-        localStorage.setItem(this.TOKEN_KEY, response.token);
-        localStorage.setItem(this.USER_KEY, JSON.stringify(response.user));
-        this.currentUser.set(response.user);
-      })
+  private loadUser(): void {
+    const token = localStorage.getItem('token');
+    const user = localStorage.getItem('user');
+    if (token && user) {
+      this.currentUser.set(JSON.parse(user));
+      this.isAuthenticated.set(true);
+    }
+  }
+
+  login(email: string, password: string): void {
+    // Mode Mock - Simulation d'authentification
+    const user = this.mockUsers.find(
+      u => u.email === email && u.password === password
     );
+
+    if (user) {
+      const { password: _, ...userWithoutPassword } = user;
+      const mockToken = 'mock-jwt-token-' + Date.now();
+      
+      localStorage.setItem('token', mockToken);
+      localStorage.setItem('user', JSON.stringify(userWithoutPassword));
+      this.currentUser.set(userWithoutPassword);
+      this.isAuthenticated.set(true);
+      this.router.navigate(['/dashboard']);
+    } else {
+      alert('❌ Email ou mot de passe incorrect');
+    }
   }
 
-  logout() {
-    localStorage.removeItem(this.TOKEN_KEY);
-    localStorage.removeItem(this.USER_KEY);
+  logout(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
     this.currentUser.set(null);
+    this.isAuthenticated.set(false);
     this.router.navigate(['/login']);
   }
 
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    return localStorage.getItem('token');
   }
 
-  isAuthenticated(): boolean {
-    return !!this.getToken();
-  }
-
-  hasRole(role: string): boolean {
+  hasRole(roles: string[]): boolean {
     const user = this.currentUser();
-    return user ? user.role === role : false;
-  }
-
-  private loadUserFromStorage() {
-    const userStr = localStorage.getItem(this.USER_KEY);
-    if (userStr) {
-      try {
-        const user = JSON.parse(userStr);
-        this.currentUser.set(user);
-      } catch (e) {
-        console.error('Error parsing user from storage', e);
-      }
-    }
+    return user ? roles.includes(user.role) : false;
   }
 }

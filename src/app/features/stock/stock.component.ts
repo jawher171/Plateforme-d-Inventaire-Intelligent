@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ApiService } from '../../core/services/api.service';
+import { MockDataService } from '../../core/services/mock-data.service';
 import { StockMovement, Product, Site } from '../../shared/models';
 
 @Component({
@@ -243,7 +243,7 @@ export class StockComponent implements OnInit {
   showModal = false;
   currentMovement: Partial<StockMovement> = this.getEmptyMovement();
 
-  constructor(private apiService: ApiService) {}
+  constructor(private mockDataService: MockDataService) {}
 
   ngOnInit() {
     this.loadMovements();
@@ -252,24 +252,18 @@ export class StockComponent implements OnInit {
   }
 
   loadMovements() {
-    this.apiService.get<StockMovement[]>('api/stock-movements').subscribe({
-      next: (data) => this.movements.set(data),
-      error: (err) => console.error('Error loading movements', err)
-    });
+    const movementsData = this.mockDataService.getMovements();
+    this.movements.set(movementsData);
   }
 
   loadProducts() {
-    this.apiService.get<Product[]>('api/products').subscribe({
-      next: (data) => this.products.set(data),
-      error: (err) => console.error('Error loading products', err)
-    });
+    const productsData = this.mockDataService.getProducts();
+    this.products.set(productsData);
   }
 
   loadSites() {
-    this.apiService.get<Site[]>('api/sites').subscribe({
-      next: (data) => this.sites.set(data),
-      error: (err) => console.error('Error loading sites', err)
-    });
+    const sitesData = this.mockDataService.getSites();
+    this.sites.set(sitesData);
   }
 
   openModal(type: 'Entree' | 'Sortie' | 'Transfert') {
@@ -288,14 +282,10 @@ export class StockComponent implements OnInit {
   }
 
   saveMovement() {
-    this.apiService.post<StockMovement>('api/stock-movements', this.currentMovement).subscribe({
-      next: () => {
-        this.loadMovements();
-        this.loadProducts(); // Refresh to get updated stock quantities
-        this.closeModal();
-      },
-      error: (err) => console.error('Error creating movement', err)
-    });
+    this.mockDataService.addMovement(this.currentMovement);
+    this.loadMovements();
+    this.loadProducts(); // Refresh to get updated stock quantities
+    this.closeModal();
   }
 
   getTypeClass(type: string): string {

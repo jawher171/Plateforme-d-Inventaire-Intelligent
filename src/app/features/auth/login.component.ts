@@ -51,6 +51,11 @@ import { LoginRequest } from '../../shared/models';
             <span *ngIf="!loading">Se connecter</span>
             <span *ngIf="loading">Connexion...</span>
           </button>
+
+          <div class="demo-credentials">
+            <p>📧 Demo: admin&#64;inventaire.tn</p>
+            <p>🔑 Password: admin123</p>
+          </div>
         </form>
       </div>
     </div>
@@ -160,6 +165,22 @@ import { LoginRequest } from '../../shared/models';
       cursor: not-allowed;
     }
 
+    .demo-credentials {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f0f7ff;
+      border-radius: 8px;
+      border-left: 4px solid #2196F3;
+      text-align: left;
+    }
+
+    .demo-credentials p {
+      margin: 5px 0;
+      font-size: 13px;
+      color: #555;
+      font-weight: 500;
+    }
+
     @media (max-width: 768px) {
       .login-card {
         padding: 40px 30px;
@@ -188,14 +209,8 @@ export class LoginComponent {
     this.errorMessage = '';
     this.loading = true;
 
-    this.authService.login(this.credentials).subscribe({
-      next: () => {
-        this.router.navigate(['/dashboard']);
-      },
-      error: (err) => {
-        this.errorMessage = 'Email ou mot de passe incorrect';
-        this.loading = false;
-      }
-    });
+    // Call the updated mock login method
+    this.authService.login(this.credentials.email, this.credentials.password);
+    this.loading = false;
   }
 }

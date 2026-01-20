@@ -43,7 +43,7 @@ import { AuthService } from '../../../core/services/auth.service';
           <span class="badge" *ngIf="alertCount > 0">{{ alertCount }}</span>
         </a>
 
-        <a routerLink="/sites" routerLinkActive="active" class="nav-item" *ngIf="authService.hasRole('Admin')">
+        <a routerLink="/sites" routerLinkActive="active" class="nav-item" *ngIf="authService.hasRole(['Admin'])">
           <span class="icon">🏢</span>
           <span>Sites</span>
         </a>

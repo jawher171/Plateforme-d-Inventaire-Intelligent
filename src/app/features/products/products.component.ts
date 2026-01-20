@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ApiService } from '../../core/services/api.service';
+import { MockDataService } from '../../core/services/mock-data.service';
 import { Product, Category, Site } from '../../shared/models';
 
 @Component({
@@ -314,7 +314,7 @@ export class ProductsComponent implements OnInit {
 
   currentProduct: Partial<Product> = this.getEmptyProduct();
 
-  constructor(private apiService: ApiService) {}
+  constructor(private mockDataService: MockDataService) {}
 
   ngOnInit() {
     this.loadProducts();
@@ -323,27 +323,19 @@ export class ProductsComponent implements OnInit {
   }
 
   loadProducts() {
-    this.apiService.get<Product[]>('api/products').subscribe({
-      next: (data) => {
-        this.products.set(data);
-        this.filterProducts();
-      },
-      error: (err) => console.error('Error loading products', err)
-    });
+    const productsData = this.mockDataService.getProducts();
+    this.products.set(productsData);
+    this.filterProducts();
   }
 
   loadCategories() {
-    this.apiService.get<Category[]>('api/categories').subscribe({
-      next: (data) => this.categories.set(data),
-      error: (err) => console.error('Error loading categories', err)
-    });
+    const categoriesData = this.mockDataService.getCategories();
+    this.categories.set(categoriesData);
   }
 
   loadSites() {
-    this.apiService.get<Site[]>('api/sites').subscribe({
-      next: (data) => this.sites.set(data),
-      error: (err) => console.error('Error loading sites', err)
-    });
+    const sitesData = this.mockDataService.getSites();
+    this.sites.set(sitesData);
   }
 
   filterProducts() {
@@ -405,30 +397,20 @@ export class ProductsComponent implements OnInit {
 
   deleteProduct(product: Product) {
     if (confirm(`Êtes-vous sûr de vouloir supprimer "${product.nom}" ?`)) {
-      this.apiService.delete(`api/products/${product.id}`).subscribe({
-        next: () => this.loadProducts(),
-        error: (err) => console.error('Error deleting product', err)
-      });
+      this.mockDataService.deleteProduct(product.id);
+      this.loadProducts();
     }
   }
 
   saveProduct() {
     if (this.isEditing && this.currentProduct.id) {
-      this.apiService.put<Product>(`api/products/${this.currentProduct.id}`, this.currentProduct).subscribe({
-        next: () => {
-          this.loadProducts();
-          this.closeModal();
-        },
-        error: (err) => console.error('Error updating product', err)
-      });
+      this.mockDataService.updateProduct(this.currentProduct.id, this.currentProduct);
+      this.loadProducts();
+      this.closeModal();
     } else {
-      this.apiService.post<Product>('api/products', this.currentProduct).subscribe({
-        next: () => {
-          this.loadProducts();
-          this.closeModal();
-        },
-        error: (err) => console.error('Error creating product', err)
-      });
+      this.mockDataService.addProduct(this.currentProduct);
+      this.loadProducts();
+      this.closeModal();
     }
   }
 

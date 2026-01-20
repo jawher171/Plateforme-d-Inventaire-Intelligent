@@ -1,6 +1,6 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ApiService } from '../../core/services/api.service';
+import { MockDataService } from '../../core/services/mock-data.service';
 import { Alert } from '../../shared/models';
 
 @Component({
@@ -305,17 +305,15 @@ export class AlertsComponent implements OnInit {
     };
   });
 
-  constructor(private apiService: ApiService) {}
+  constructor(private mockDataService: MockDataService) {}
 
   ngOnInit() {
     this.loadAlerts();
   }
 
   loadAlerts() {
-    this.apiService.get<Alert[]>('api/alerts').subscribe({
-      next: (data) => this.alerts.set(data),
-      error: (err) => console.error('Error loading alerts', err)
-    });
+    const alertsData = this.mockDataService.getAlerts();
+    this.alerts.set(alertsData);
   }
 
   getCounts() {
@@ -354,9 +352,7 @@ export class AlertsComponent implements OnInit {
   }
 
   markAsHandled(alert: Alert) {
-    this.apiService.put<Alert>(`api/alerts/${alert.id}/handle`, {}).subscribe({
-      next: () => this.loadAlerts(),
-      error: (err) => console.error('Error handling alert', err)
-    });
+    this.mockDataService.treatAlert(alert.id);
+    this.loadAlerts();
   }
 }

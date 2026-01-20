@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ApiService } from '../../core/services/api.service';
+import { MockDataService } from '../../core/services/mock-data.service';
 import { Product } from '../../shared/models';
 
 @Component({
@@ -370,7 +370,7 @@ export class ScannerComponent {
   codeInput = '';
   errorMessage = '';
 
-  constructor(private apiService: ApiService) {}
+  constructor(private mockDataService: MockDataService) {}
 
   searchProduct() {
     if (!this.codeInput.trim()) {
@@ -380,15 +380,13 @@ export class ScannerComponent {
     this.errorMessage = '';
     this.scannedProduct.set(null);
 
-    this.apiService.get<Product>(`api/products/barcode/${this.codeInput}`).subscribe({
-      next: (product) => {
-        this.scannedProduct.set(product);
-        this.codeInput = '';
-      },
-      error: () => {
-        this.errorMessage = 'Produit non trouvé pour ce code';
-      }
-    });
+    const product = this.mockDataService.getProductByBarcode(this.codeInput);
+    if (product) {
+      this.scannedProduct.set(product);
+      this.codeInput = '';
+    } else {
+      this.errorMessage = 'Produit non trouvé pour ce code';
+    }
   }
 
   quickMovement(type: 'Entree' | 'Sortie') {
@@ -405,19 +403,18 @@ export class ScannerComponent {
       quantite: Number(quantity),
       produitId: product.id,
       siteId: product.siteId,
-      motif: `${type} rapide via scanner`
+      motif: `${type} rapide via scanner`,
+      userId: 1
     };
 
-    this.apiService.post('api/stock-movements', movement).subscribe({
-      next: () => {
-        alert(`${type} enregistrée avec succès!`);
-        this.searchProduct(); // Refresh product data
-      },
-      error: (err) => {
-        console.error('Error creating movement', err);
-        alert('Erreur lors de l\'enregistrement');
-      }
-    });
+    this.mockDataService.addMovement(movement);
+    alert(`${type} enregistrée avec succès!`);
+    
+    // Refresh product data
+    const updatedProduct = this.mockDataService.getProductByBarcode(product.codeBarres);
+    if (updatedProduct) {
+      this.scannedProduct.set(updatedProduct);
+    }
   }
 
   getStockStatus(): string {
