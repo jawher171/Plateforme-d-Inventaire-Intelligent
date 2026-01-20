@@ -1,7 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ApiService } from '../../core/services/api.service';
+import { MockDataService } from '../../core/services/mock-data.service';
 import { Site } from '../../shared/models';
 
 @Component({
@@ -238,17 +238,15 @@ export class SitesComponent implements OnInit {
   isEditing = false;
   currentSite: Partial<Site> = this.getEmptySite();
 
-  constructor(private apiService: ApiService) {}
+  constructor(private mockDataService: MockDataService) {}
 
   ngOnInit() {
     this.loadSites();
   }
 
   loadSites() {
-    this.apiService.get<Site[]>('api/sites').subscribe({
-      next: (data) => this.sites.set(data),
-      error: (err) => console.error('Error loading sites', err)
-    });
+    const sitesData = this.mockDataService.getSites();
+    this.sites.set(sitesData);
   }
 
   openModal(site?: Site) {
@@ -273,30 +271,17 @@ export class SitesComponent implements OnInit {
 
   deleteSite(site: Site) {
     if (confirm(`Êtes-vous sûr de vouloir supprimer le site "${site.nom}" ?`)) {
-      this.apiService.delete(`api/sites/${site.id}`).subscribe({
-        next: () => this.loadSites(),
-        error: (err) => console.error('Error deleting site', err)
-      });
+      alert('La suppression des sites n\'est pas encore disponible en mode mock');
     }
   }
 
   saveSite() {
     if (this.isEditing && this.currentSite.id) {
-      this.apiService.put<Site>(`api/sites/${this.currentSite.id}`, this.currentSite).subscribe({
-        next: () => {
-          this.loadSites();
-          this.closeModal();
-        },
-        error: (err) => console.error('Error updating site', err)
-      });
+      alert('La modification des sites n\'est pas encore disponible en mode mock');
+      this.closeModal();
     } else {
-      this.apiService.post<Site>('api/sites', this.currentSite).subscribe({
-        next: () => {
-          this.loadSites();
-          this.closeModal();
-        },
-        error: (err) => console.error('Error creating site', err)
-      });
+      alert('La création de nouveaux sites n\'est pas encore disponible en mode mock');
+      this.closeModal();
     }
   }
 

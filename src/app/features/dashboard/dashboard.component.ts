@@ -1,6 +1,6 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ApiService } from '../../core/services/api.service';
+import { MockDataService } from '../../core/services/mock-data.service';
 import { DashboardKPIs, Alert } from '../../shared/models';
 
 @Component({
@@ -284,7 +284,7 @@ export class DashboardComponent implements OnInit {
 
   recentAlerts = signal<Alert[]>([]);
 
-  constructor(private apiService: ApiService) {}
+  constructor(private mockDataService: MockDataService) {}
 
   ngOnInit() {
     this.loadKPIs();
@@ -292,17 +292,13 @@ export class DashboardComponent implements OnInit {
   }
 
   loadKPIs() {
-    this.apiService.get<DashboardKPIs>('api/dashboard/kpis').subscribe({
-      next: (data) => this.kpis.set(data),
-      error: (err) => console.error('Error loading KPIs', err)
-    });
+    const kpisData = this.mockDataService.getDashboardKPIs();
+    this.kpis.set(kpisData);
   }
 
   loadRecentAlerts() {
-    this.apiService.get<Alert[]>('api/alerts', { limit: 5 }).subscribe({
-      next: (data) => this.recentAlerts.set(data),
-      error: (err) => console.error('Error loading alerts', err)
-    });
+    const alertsData = this.mockDataService.getAlerts().slice(0, 5);
+    this.recentAlerts.set(alertsData);
   }
 
   getSeverityIcon(severite: string): string {
