@@ -1,12 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
+import { LiveStatusComponent } from '../live-status/live-status.component';
+import { AnimatedBadgeComponent } from '../animated-badge/animated-badge.component';
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, LiveStatusComponent, AnimatedBadgeComponent],
   template: `
     <div class="sidebar" [class.collapsed]="isCollapsed">
       <div class="sidebar-header">
@@ -74,7 +76,15 @@ import { AuthService } from '../../../core/services/auth.service';
             </svg>
           </span>
           <span class="label" *ngIf="!isCollapsed">Alertes</span>
-          <span class="badge" *ngIf="alertCount > 0 && !isCollapsed">{{ alertCount }}</span>
+          <app-animated-badge 
+            *ngIf="alertCount > 0 && !isCollapsed" 
+            variant="danger" 
+            size="sm" 
+            [pulse]="true"
+            [gradient]="true"
+          >
+            {{ alertCount }}
+          </app-animated-badge>
         </a>
 
         <a routerLink="/sites" routerLinkActive="active" class="nav-item" *ngIf="authService.hasRole(['Admin'])" title="Sites">
@@ -86,6 +96,10 @@ import { AuthService } from '../../../core/services/auth.service';
           <span class="label" *ngIf="!isCollapsed">Sites</span>
         </a>
       </nav>
+
+      <div class="sidebar-bottom">
+        <app-live-status *ngIf="!isCollapsed"></app-live-status>
+      </div>
 
       <div class="sidebar-footer" *ngIf="!isCollapsed">
         <div class="user-card">
@@ -209,6 +223,12 @@ import { AuthService } from '../../../core/services/auth.service';
       display: flex;
       flex-direction: column;
       gap: var(--spacing-xs);
+      overflow-y: auto;
+    }
+
+    .sidebar-bottom {
+      padding: var(--spacing-md) var(--spacing-lg);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .nav-item {
@@ -250,9 +270,10 @@ import { AuthService } from '../../../core/services/auth.service';
 
     .nav-item.active {
       color: var(--color-text-inverse);
-      background: rgba(33, 150, 243, 0.15);
+      background: linear-gradient(90deg, rgba(33, 150, 243, 0.2), rgba(139, 92, 246, 0.2));
       border-left-color: var(--color-primary-400);
       font-weight: var(--font-weight-semibold);
+      box-shadow: 0 0 20px rgba(33, 150, 243, 0.3);
     }
 
     .nav-item.active::before {
@@ -279,19 +300,6 @@ import { AuthService } from '../../../core/services/auth.service';
       overflow: hidden;
       text-overflow: ellipsis;
       font-size: var(--font-size-sm);
-    }
-
-    .nav-item .badge {
-      margin-left: auto;
-      background: linear-gradient(135deg, var(--color-danger-500), var(--color-danger-600));
-      color: var(--color-text-inverse);
-      padding: var(--spacing-xs) var(--spacing-sm);
-      border-radius: var(--radius-full);
-      font-size: var(--font-size-xs);
-      font-weight: var(--font-weight-bold);
-      min-width: 24px;
-      text-align: center;
-      box-shadow: var(--shadow-sm);
     }
 
     .sidebar-footer {
@@ -382,14 +390,23 @@ import { AuthService } from '../../../core/services/auth.service';
         justify-content: center;
         padding: var(--spacing-md);
       }
+
+      .sidebar-bottom {
+        display: none;
+      }
     }
   `]
 })
-export class SidebarComponent {
+export class SidebarComponent implements OnInit {
   alertCount = 0;
   isCollapsed = false;
 
   constructor(public authService: AuthService) {}
+
+  ngOnInit() {
+    // Set a mock alert count
+    this.alertCount = 3;
+  }
 
   toggleSidebar() {
     this.isCollapsed = !this.isCollapsed;

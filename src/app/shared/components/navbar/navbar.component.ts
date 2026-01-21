@@ -1,21 +1,38 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
+import { StoreSelectorComponent } from '../store-selector/store-selector.component';
+import { AnimatedBadgeComponent } from '../animated-badge/animated-badge.component';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, StoreSelectorComponent, AnimatedBadgeComponent],
   template: `
-    <div class="navbar">
+    <div class="navbar glass">
       <div class="navbar-left">
-        <div class="search-bar">
-          <svg class="search-icon" width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
-            <path d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"/>
-          </svg>
-          <input type="text" placeholder="Rechercher un produit, code-barres...">
-          <kbd class="shortcut">Ctrl+K</kbd>
+        <div class="brand">
+          <div class="logo-animated">
+            <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="40" height="40" rx="8" fill="url(#gradient-logo)"/>
+              <path d="M12 15h16M12 20h16M12 25h12" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
+              <defs>
+                <linearGradient id="gradient-logo" x1="0" y1="0" x2="40" y2="40">
+                  <stop offset="0%" stop-color="#3b82f6"/>
+                  <stop offset="100%" stop-color="#8b5cf6"/>
+                </linearGradient>
+              </defs>
+            </svg>
+          </div>
+          <div class="brand-text">
+            <h1 class="brand-title gradient-text">Plateforme d'Inventaire Intelligent</h1>
+            <p class="brand-subtitle">Gestion multi-magasin en temps réel</p>
+          </div>
         </div>
+      </div>
+
+      <div class="navbar-center">
+        <app-store-selector></app-store-selector>
       </div>
 
       <div class="navbar-actions">
@@ -23,7 +40,15 @@ import { AuthService } from '../../../core/services/auth.service';
           <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
             <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"/>
           </svg>
-          <span class="notification-badge">3</span>
+          <app-animated-badge 
+            variant="danger" 
+            size="sm" 
+            [pulse]="true"
+            [gradient]="true"
+            class="notification-badge-component"
+          >
+            3
+          </app-animated-badge>
         </button>
 
         <button class="action-btn" title="Aide">
@@ -35,7 +60,7 @@ import { AuthService } from '../../../core/services/auth.service';
         <div class="divider"></div>
 
         <div class="user-menu">
-          <div class="user-avatar">{{ getUserInitials() }}</div>
+          <div class="user-avatar gradient-primary">{{ getUserInitials() }}</div>
           <div class="user-details">
             <div class="user-name">{{ getUserName() }}</div>
             <div class="user-role">{{ getUserRole() }}</div>
@@ -47,7 +72,7 @@ import { AuthService } from '../../../core/services/auth.service';
           </button>
         </div>
 
-        <button class="logout-btn" (click)="logout()" title="Déconnexion">
+        <button class="logout-btn gradient-danger" (click)="logout()" title="Déconnexion">
           <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor">
             <path d="M3 3a1 1 0 011-1h8a1 1 0 011 1v4a1 1 0 11-2 0V4H5v10h6v-3a1 1 0 112 0v4a1 1 0 01-1 1H4a1 1 0 01-1-1V3z"/>
             <path d="M13 9a1 1 0 01.707.293l3 3a1 1 0 010 1.414l-3 3A1 1 0 0112 16v-2H9a1 1 0 110-2h3v-2a1 1 0 011-1z"/>
@@ -59,83 +84,59 @@ import { AuthService } from '../../../core/services/auth.service';
   `,
   styles: [`
     .navbar {
-      height: 72px;
-      background: var(--color-bg-primary);
-      box-shadow: var(--shadow-sm);
+      height: 80px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      box-shadow: var(--shadow-md);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 var(--spacing-xl);
+      padding: 0 var(--spacing-2xl);
       position: sticky;
       top: 0;
       z-index: var(--z-index-sticky);
-      border-bottom: 1px solid var(--color-border-light);
+      border-bottom: 1px solid var(--glass-border);
+      gap: var(--spacing-xl);
     }
 
     .navbar-left {
-      flex: 1;
-      max-width: 600px;
+      flex: 0 1 auto;
     }
 
-    .search-bar {
+    .navbar-center {
+      flex: 0 1 auto;
+    }
+
+    .brand {
       display: flex;
       align-items: center;
-      background: var(--color-bg-secondary);
-      border: 2px solid var(--color-border-light);
-      border-radius: var(--radius-full);
-      padding: var(--spacing-sm) var(--spacing-lg);
       gap: var(--spacing-md);
-      transition: all var(--transition-base);
-      width: 100%;
     }
 
-    .search-bar:focus-within {
-      border-color: var(--color-primary-500);
-      box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
-      background: var(--color-bg-primary);
+    .logo-animated {
+      animation: rotate-glow 8s linear infinite;
+      filter: drop-shadow(0 0 8px rgba(59, 130, 246, 0.4));
     }
 
-    .search-icon {
-      color: var(--color-text-tertiary);
-      flex-shrink: 0;
-      transition: color var(--transition-base);
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
     }
 
-    .search-bar:focus-within .search-icon {
-      color: var(--color-primary-500);
+    .brand-title {
+      font-size: var(--font-size-lg);
+      font-weight: var(--font-weight-bold);
+      margin: 0;
+      line-height: 1.2;
     }
 
-    .search-bar input {
-      border: none;
-      background: none;
-      outline: none;
-      flex: 1;
-      font-size: var(--font-size-sm);
-      color: var(--color-text-primary);
-      font-family: var(--font-family-primary);
-      min-width: 0;
-    }
-
-    .search-bar input::placeholder {
-      color: var(--color-text-tertiary);
-    }
-
-    .shortcut {
-      display: none;
-      padding: var(--spacing-xs) var(--spacing-sm);
-      background: var(--color-gray-100);
-      border: 1px solid var(--color-border-light);
-      border-radius: var(--radius-sm);
+    .brand-subtitle {
       font-size: var(--font-size-xs);
       color: var(--color-text-tertiary);
-      font-family: var(--font-family-mono);
-      flex-shrink: 0;
-    }
-
-    @media (min-width: 1024px) {
-      .shortcut {
-        display: block;
-      }
+      margin: 0;
+      font-weight: var(--font-weight-medium);
     }
 
     .navbar-actions {
@@ -161,34 +162,15 @@ import { AuthService } from '../../../core/services/auth.service';
     }
 
     .action-btn:hover {
-      background: var(--color-gray-100);
-      color: var(--color-text-primary);
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--color-primary-600);
       transform: scale(1.05);
     }
 
-    .notification-badge {
+    .notification-badge-component {
       position: absolute;
-      top: 6px;
-      right: 6px;
-      background: linear-gradient(135deg, var(--color-danger-500), var(--color-danger-600));
-      color: var(--color-text-inverse);
-      font-size: 10px;
-      padding: 2px 5px;
-      border-radius: var(--radius-full);
-      font-weight: var(--font-weight-bold);
-      min-width: 18px;
-      text-align: center;
-      box-shadow: var(--shadow-sm);
-      animation: pulse-badge 2s ease-in-out infinite;
-    }
-
-    @keyframes pulse-badge {
-      0%, 100% {
-        transform: scale(1);
-      }
-      50% {
-        transform: scale(1.1);
-      }
+      top: 4px;
+      right: 4px;
     }
 
     .divider {
@@ -203,7 +185,7 @@ import { AuthService } from '../../../core/services/auth.service';
       align-items: center;
       gap: var(--spacing-md);
       padding: var(--spacing-sm) var(--spacing-md);
-      background: var(--color-bg-secondary);
+      background: rgba(59, 130, 246, 0.05);
       border-radius: var(--radius-full);
       cursor: pointer;
       transition: all var(--transition-base);
@@ -211,15 +193,15 @@ import { AuthService } from '../../../core/services/auth.service';
     }
 
     .user-menu:hover {
-      background: var(--color-gray-100);
-      border-color: var(--color-border-medium);
+      background: rgba(59, 130, 246, 0.1);
+      border-color: rgba(59, 130, 246, 0.2);
+      box-shadow: var(--shadow-blue);
     }
 
     .user-avatar {
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--color-primary-500), var(--color-primary-600));
       color: var(--color-text-inverse);
       display: flex;
       align-items: center;
@@ -227,7 +209,7 @@ import { AuthService } from '../../../core/services/auth.service';
       font-weight: var(--font-weight-bold);
       font-size: var(--font-size-sm);
       flex-shrink: 0;
-      box-shadow: var(--shadow-sm);
+      box-shadow: var(--shadow-blue);
     }
 
     .user-details {
@@ -275,7 +257,6 @@ import { AuthService } from '../../../core/services/auth.service';
       display: flex;
       align-items: center;
       gap: var(--spacing-sm);
-      background: linear-gradient(135deg, var(--color-danger-500), var(--color-danger-600));
       color: var(--color-text-inverse);
       border: none;
       padding: var(--spacing-sm) var(--spacing-lg);
@@ -284,13 +265,13 @@ import { AuthService } from '../../../core/services/auth.service';
       font-size: var(--font-size-sm);
       font-weight: var(--font-weight-medium);
       transition: all var(--transition-base);
-      box-shadow: var(--shadow-sm);
+      box-shadow: var(--shadow-red);
     }
 
     .logout-btn:hover {
-      background: linear-gradient(135deg, var(--color-danger-600), var(--color-danger-700));
+      filter: brightness(1.1);
       transform: translateY(-2px);
-      box-shadow: var(--shadow-md);
+      box-shadow: var(--shadow-red-lg);
     }
 
     .logout-text {
@@ -300,10 +281,15 @@ import { AuthService } from '../../../core/services/auth.service';
     @media (max-width: 1024px) {
       .navbar {
         padding: 0 var(--spacing-md);
+        gap: var(--spacing-md);
       }
 
-      .search-bar {
-        max-width: 300px;
+      .brand-text {
+        display: none;
+      }
+
+      .navbar-center {
+        display: none;
       }
 
       .user-details {
@@ -325,10 +311,6 @@ import { AuthService } from '../../../core/services/auth.service';
       .navbar {
         height: 64px;
         padding: 0 var(--spacing-md);
-      }
-
-      .search-bar {
-        max-width: 200px;
       }
 
       .divider {
