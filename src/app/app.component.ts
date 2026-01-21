@@ -29,11 +29,12 @@ import { NavbarComponent } from './shared/components/navbar/navbar.component';
       flex: 1;
       display: flex;
       flex-direction: column;
-      background-color: #f5f5f5;
+      background-color: var(--color-bg-secondary);
     }
 
     .main-content.with-sidebar {
-      margin-left: 260px;
+      margin-left: 280px;
+      transition: margin-left var(--transition-base);
     }
 
     @media (max-width: 768px) {
