@@ -23,13 +23,27 @@ import { NavbarComponent } from './shared/components/navbar/navbar.component';
     .app-container {
       display: flex;
       min-height: 100vh;
+      background: var(--gradient-bg-light);
     }
 
     .main-content {
       flex: 1;
       display: flex;
       flex-direction: column;
-      background-color: var(--color-bg-secondary);
+      background: transparent;
+      position: relative;
+    }
+
+    .main-content::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--gradient-bg-light);
+      z-index: -1;
+      pointer-events: none;
     }
 
     .main-content.with-sidebar {

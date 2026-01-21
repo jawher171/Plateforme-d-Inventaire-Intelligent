@@ -136,6 +136,55 @@
   --z-index-modal: 1050;
   --z-index-popover: 1060;
   --z-index-tooltip: 1070;
+
+  // Glassmorphism Effects
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --glass-bg-light: rgba(255, 255, 255, 0.6);
+  --glass-blur: 12px;
+  --glass-blur-strong: 20px;
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+
+  // Gradient Backgrounds
+  --gradient-primary: linear-gradient(135deg, #3b82f6, #8b5cf6);
+  --gradient-primary-vertical: linear-gradient(180deg, #3b82f6, #8b5cf6);
+  --gradient-success: linear-gradient(135deg, #10b981, #059669);
+  --gradient-danger: linear-gradient(135deg, #ef4444, #dc2626);
+  --gradient-warning: linear-gradient(135deg, #f59e0b, #d97706);
+  --gradient-purple: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  --gradient-blue-purple: linear-gradient(135deg, #2196F3, #8b5cf6);
+  --gradient-green: linear-gradient(135deg, #4caf50, #43a047);
+  --gradient-orange-red: linear-gradient(135deg, #ff9800, #f44336);
+  
+  // Gradient Backgrounds - Page Backgrounds
+  --gradient-bg-light: linear-gradient(to bottom right, #f9fafb, #dbeafe, #f9fafb);
+  --gradient-bg-soft: linear-gradient(to bottom right, #fafafa, #f3f4f6, #fafafa);
+
+  // Colored Shadows
+  --shadow-blue: 0 4px 14px 0 rgba(59, 130, 246, 0.3);
+  --shadow-blue-lg: 0 10px 25px 0 rgba(59, 130, 246, 0.4);
+  --shadow-green: 0 4px 14px 0 rgba(16, 185, 129, 0.3);
+  --shadow-green-lg: 0 10px 25px 0 rgba(16, 185, 129, 0.4);
+  --shadow-red: 0 4px 14px 0 rgba(239, 68, 68, 0.3);
+  --shadow-red-lg: 0 10px 25px 0 rgba(239, 68, 68, 0.4);
+  --shadow-purple: 0 4px 14px 0 rgba(139, 92, 246, 0.3);
+  --shadow-purple-lg: 0 10px 25px 0 rgba(139, 92, 246, 0.4);
+  --shadow-orange: 0 4px 14px 0 rgba(251, 146, 60, 0.3);
+  --shadow-orange-lg: 0 10px 25px 0 rgba(251, 146, 60, 0.4);
+
+  // Animation Durations & Timing
+  --animation-duration-fast: 150ms;
+  --animation-duration-base: 300ms;
+  --animation-duration-slow: 500ms;
+  --animation-timing: cubic-bezier(0.4, 0, 0.2, 1);
+  --animation-timing-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+
+  // Purple gradient shades (for UI elements)
+  --color-purple-50: #faf5ff;
+  --color-purple-100: #f3e8ff;
+  --color-purple-500: #8b5cf6;
+  --color-purple-600: #7c3aed;
+  --color-purple-700: #6d28d9;
 }
 
 // Dark Mode
