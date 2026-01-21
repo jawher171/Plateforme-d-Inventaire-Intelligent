@@ -331,10 +331,6 @@ import { AuthService } from '../../../core/services/auth.service';
         max-width: 200px;
       }
 
-      .search-bar input::placeholder {
-        content: "Rechercher...";
-      }
-
       .divider {
         display: none;
       }

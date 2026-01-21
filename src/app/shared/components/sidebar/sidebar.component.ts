@@ -396,7 +396,10 @@ export class SidebarComponent {
   }
 
   isMobile(): boolean {
-    return window.innerWidth <= 768;
+    if (typeof window !== 'undefined') {
+      return window.innerWidth <= 768;
+    }
+    return false;
   }
 
   getUserName(): string {
@@ -406,7 +409,7 @@ export class SidebarComponent {
 
   getUserInitials(): string {
     const user = this.authService.currentUser();
-    if (user) {
+    if (user && user.prenom && user.nom) {
       return `${user.prenom.charAt(0)}${user.nom.charAt(0)}`.toUpperCase();
     }
     return 'U';
